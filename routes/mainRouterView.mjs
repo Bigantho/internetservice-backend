@@ -7,7 +7,7 @@ router.get('/login', async (req,res) => {
     res.render('login')
 });
 
-router.get('/payment', async (req, res) => {
+router.get('/api/v1/payment', async (req, res) => {
     res.render('payment')
 })
 
