@@ -4,7 +4,7 @@ import { Model, DataTypes } from "sequelize";
 import db from '../config/db.mjs';
 
 // module.exports = (sequelize, DataTypes) => {
-class Agents extends Model {
+class Users extends Model {
   /**
    * Helper method for defining associations.
    * This method is not a part of Sequelize lifecycle.
@@ -14,7 +14,7 @@ class Agents extends Model {
     // define association here
   }
 }
-Agents.init({
+Users.init({
   user: DataTypes.STRING,
   password: DataTypes.STRING,
   email: DataTypes.STRING,
@@ -24,9 +24,9 @@ Agents.init({
   }
 }, {
   sequelize: db.connection(),
-  modelName: 'Agents',
+  modelName: 'Users',
 });
 // return Agents;
 // };
 
-export default Agents
+export default Users
