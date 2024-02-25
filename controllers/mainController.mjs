@@ -16,7 +16,7 @@ export default class mainController {
     try {
       const agentData = await Users.findOne({
         where: {
-          [Op.or]: { user, email: user },
+           email: user ,
           password
         }
       })
@@ -163,7 +163,7 @@ export default class mainController {
         return "Error al guardar tarjeta";
       }
     }
-    
+
     async function savePayment(paymentObject, cardID, trxID, userID) {
       try {
         const paymentSaved = await Payments.create({

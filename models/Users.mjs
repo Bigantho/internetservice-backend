@@ -25,6 +25,7 @@ Users.init({
 }, {
   sequelize: db.connection(),
   modelName: 'Users',
+  tableName: 'users'
 });
 // return Agents;
 // };
