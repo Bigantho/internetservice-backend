@@ -7,6 +7,7 @@ import Clients from '../models/Clients.mjs'
 import card from '../utils/chargedCreditCard.mjs'
 import { Op } from 'sequelize'
 import pkg from 'authorizenet';
+import logger from '../utils/logger.mjs';
 const { APIContracts, APIControllers, Constants: SDKConstants } = pkg;
 export default class mainController {
 
@@ -16,17 +17,20 @@ export default class mainController {
     try {
       const agentData = await Users.findOne({
         where: {
-           email: user ,
+          emal: user,
           password
         }
       })
 
       if (!agentData) {
-        return res.status(500).json({message:"Credenciales invalidas"})
+        logger.error(agentData)
+
+        return res.status(500).json({ message: "Credenciales invalidas" })
       }
-      res.status(200).json({ message: "Credenciales correctas.", user:agentData })
+      return res.status(200).json({ message: "Credenciales correctas.", user: agentData })
     } catch (error) {
-      res.status(500).json(error)
+      logger.error(error)
+      return res.status(500).json(error)
     }
   }
 
@@ -157,7 +161,7 @@ export default class mainController {
         } else {
           return currentCard
         }
-       
+
       } catch (error) {
         console.log(error);
         return "Error al guardar tarjeta";
@@ -170,11 +174,11 @@ export default class mainController {
 
           id_user: userID,
           id_credit_card: cardID,
-  
+
           transaction_id: trxID,
           invoice: paymentObject.invoice.number,
           description: paymentObject.invoice.description,
-          amount:  paymentObject.invoice.amount,
+          amount: paymentObject.invoice.amount,
 
           billing_first_name: paymentObject.billing.first_name,
           billing_last_name: paymentObject.billing.last_name,
@@ -187,7 +191,7 @@ export default class mainController {
           billing_phone: paymentObject.billing.phone_number,
           billing_fax: paymentObject.billing.fax,
           billing_email: paymentObject.billing.email,
-  
+
           shipping_first_name: paymentObject.shipping.first_name,
           shipping_last_name: paymentObject.shipping.last_name,
           shipping_company: paymentObject.shipping.company,
@@ -204,33 +208,33 @@ export default class mainController {
       }
     }
 
-    async function saveClient(clientObject){
+    async function saveClient(clientObject) {
       try {
 
         const currentClient = await checkClientExist(clientObject);
         if (flagClient == null) {
           const clientSaved = await Clients.create({
-            name: clientObject.first_name, 
-            last_name: clientObject.last_name, 
+            name: clientObject.first_name,
+            last_name: clientObject.last_name,
             email: clientObject.email,
             phone_number: clientObject.phone_number
           })
           return clientSaved
-        }else{
+        } else {
           return currentClient
         }
-        
+
       } catch (error) {
         console.log(error);
         return "Error al guardar el cliente."
       }
     }
 
-    async function checkClientExist(clientObject){
-      const existClient = await Clients.findOne ({
+    async function checkClientExist(clientObject) {
+      const existClient = await Clients.findOne({
         where: {
-          name: clientObject.first_name, 
-          last_name: clientObject.last_name, 
+          name: clientObject.first_name,
+          last_name: clientObject.last_name,
           // email: clientObject.email,
           phone_number: clientObject.phone_number
         }
@@ -238,8 +242,8 @@ export default class mainController {
       return existClient
     }
 
-    async function checkCardExist(cardObject){
-      const existClient = await CreditCards.findOne ({
+    async function checkCardExist(cardObject) {
+      const existClient = await CreditCards.findOne({
         where: {
           number: cardObject.number,
           exp_date: cardObject.expiration,
@@ -251,7 +255,7 @@ export default class mainController {
   }
 
 
-  static async paymentTest(req,res){
+  static async paymentTest(req, res) {
     const paymentObject = req.body
     const cardID = 2
     const trxID = 252525252525
@@ -264,7 +268,7 @@ export default class mainController {
         transaction_id: trxID,
         invoice: paymentObject.invoice.number,
         description: paymentObject.invoice.description,
-        amount:  paymentObject.invoice.amount,
+        amount: paymentObject.invoice.amount,
 
         billing_first_name: paymentObject.billing.first_name,
         billing_last_name: paymentObject.billing.last_name,
@@ -287,9 +291,9 @@ export default class mainController {
         shipping_zip_code: paymentObject.shipping.zip_code,
         shipping_country: paymentObject.shipping.country,
       })
-      res.status(200).json( paymentSaved)
+      res.status(200).json(paymentSaved)
     } catch (error) {
-      res.status(500).json( error)
+      res.status(500).json(error)
     }
   }
 }
