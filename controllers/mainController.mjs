@@ -17,7 +17,7 @@ export default class mainController {
     try {
       const agentData = await Users.findOne({
         where: {
-          emal: user,
+          email: user,
           password
         }
       })
