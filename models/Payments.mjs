@@ -37,7 +37,10 @@ Payments.init({
   billing_zip_code :DataTypes.INTEGER,
   billing_country :DataTypes.STRING,
   billing_phone :DataTypes.STRING,
-  billing_fax :DataTypes.STRING,
+  billing_fax :{
+    type:DataTypes.STRING,
+    allowNull: true
+  },
   billing_email :DataTypes.STRING,
 
   shipping_first_name :DataTypes.STRING,
@@ -52,6 +55,7 @@ Payments.init({
 }, {
   sequelize: db.connection(),
   modelName: 'Payments',
+  tableName:'payments'
 });
 // return Agents;
 // };
@@ -99,7 +103,16 @@ export const createFormValidator = [
 
   check('invoice.amount')
     .isNumeric().withMessage("El tipo de dato debe ser numerico")
-    .isFloat({min:0.00, max: 800.00}).withMessage("El monto de cobro debe estar entre $0.00 y $800.00")
+    .isFloat({min:0.00, max: 800.00}).withMessage("El monto de cobro debe estar entre $0.00 y $800.00"),
+
+  check('card.number')
+    .isLength({min: 16, max:16}).withMessage("El número de tarjeta debe ser de  16 dígitos"),
+  
+  check('card.expiration')
+    .isLength({min:4, max:4}).withMessage("La fecha de expiración debe ser en formato MMYY"),
+  
+  check('card.cvc')
+    .isLength({min:3, max: 3}).withMessage("El código de seguridad debe ser de 3 dígitos")
 
 ]
 
