@@ -394,7 +394,7 @@ export default class mainController {
       paymentsFormatted.push({
         id: i+1, 
         trx_id: x.transaction_id,
-        user_name: [x.billing_first_name,x.billing_last_name].join(' ,'),
+        client_name: [x.billing_first_name,x.billing_last_name].join(' '),
         amount: x.amount,
         date_created: x.createdAt
       })
