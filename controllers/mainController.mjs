@@ -275,7 +275,7 @@ export default class mainController {
 
   static async saveCard(cardObject, clientID) {
     try {
-      const currentCard = await checkCardExist(cardObject)
+      const currentCard = await mainController.checkCardExist(cardObject)
       if (currentCard == null) {
         const cardSaved = await CreditCards.create({
           number: cardObject.number,
@@ -338,7 +338,7 @@ export default class mainController {
   static async saveClient(clientObject) {
     try {
 
-      const currentClient = await checkClientExist(clientObject);
+      const currentClient = await mainController.checkClientExist(clientObject);
       if (currentClient == null) {
         const clientSaved = await Clients.create({
           name: clientObject.first_name,
