@@ -290,7 +290,7 @@ export default class mainController {
       }
 
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return "Error al guardar tarjeta";
     }
   }
@@ -330,7 +330,7 @@ export default class mainController {
       })
       return paymentSaved
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return "Error al guardar el pago";
     }
   }
@@ -352,7 +352,7 @@ export default class mainController {
       }
 
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return "Error al guardar el cliente."
     }
   }
