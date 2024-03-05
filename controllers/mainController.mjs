@@ -115,7 +115,12 @@ export default class mainController {
               if (response.getTransactionResponse().getErrors() != null) {
                 // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                 // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-                res.status(500).json({ message: response.getTransactionResponse().getErrors().getError()[0].getErrorText() })
+                let errMsg = response.getTransactionResponse().getErrors().getError()[0].getErrorText()
+                let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
+                res.status(500).json({
+                  mainError: errMsg,
+                  errorCode: errCode
+                 })
 
               }
             }
@@ -125,22 +130,27 @@ export default class mainController {
 
               // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
               // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-              res.status(500).json({ message: response.getTransactionResponse().getErrors().getError()[0].getErrorText() })
+              let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
+              let errMsg =  response.getTransactionResponse().getErrors().getError()[0].getErrorText() 
+              res.status(500).json({ mainError: errMsg, errorCode: errCode})
 
             } else {
               // console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
               // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
-              res.status(500).json({ message: response.getMessages().getMessage()[0].getText() })
+              let errCode = response.getMessages().getMessage()[0].getCode()
+              let errMsg = response.getMessages().getMessage()[0].getText()
+              res.status(500).json({ mainError: errMsg, errorCode: errCode  })
+
             }
           }
         } else {
           // console.log('Null Response.');
-          res.status(500).json({ message: "Contacte con el soporte técnico" })
+          res.status(500).json({ mainError: "Contacte con el soporte técnico" })
         }
       });
 
     } catch (error) {
-      return res.status(500).json({ message: "Contacte con el soporte técnico", mainError: error })
+      return res.status(500).json({ messageClient: "Contacte con el soporte técnico", mainError: error })
 
     }
 
@@ -250,8 +260,9 @@ export default class mainController {
             // console.log('Result Code: ' + response.getMessages().getResultCode());
             // console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
             // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+            let errCode = response.getMessages().getMessage()[0].getCode();
             let errMsg = response.getMessages().getMessage()[0].getText()
-            return res.status(500).json({ mainError: errMsg })
+            return res.status(500).json({ mainError: errMsg , errorCode: errCode})
 
           }
         }
