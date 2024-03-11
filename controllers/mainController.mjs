@@ -153,18 +153,14 @@ export default class mainController {
       return res.status(500).json({ messageClient: "Contacte con el soporte técnico", mainError: error })
 
     }
-
-
   }
 
   static async paymentWithTrialPeriod(req, res) {
 
-
-
     const currentDate = new Date()
     const newDate = new Date()
-    // newDate.setDate(currentDate.getDate() + 7)
-    newDate.setDate(currentDate.getDate() + 1)
+    newDate.setDate(currentDate.getDate() + 7)
+    // newDate.setDate(currentDate.getDate())
     const dateToBill = newDate.toISOString().substring(0, 10)
 
     try {
@@ -213,9 +209,9 @@ export default class mainController {
       // shipTo.setCountry(r.shipping.country);
 
       const arbSubscription = new APIContracts.ARBSubscriptionType();
-      arbSubscription.setName('test1');
+      arbSubscription.setName(`${r.billing.first_name}, ${r.billing.last_name} - Creditmon `);
       arbSubscription.setPaymentSchedule(paymentScheduleType);
-      arbSubscription.setAmount('0.01');
+      arbSubscription.setAmount(r.invoice.amount);
       // arbSubscription.setTrialAmount(utils.getRandomAmount());
       arbSubscription.setPayment(payment);
       // arbSubscription.setOrder(orderType);
