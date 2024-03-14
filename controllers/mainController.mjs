@@ -33,7 +33,7 @@ export default class mainController {
     }
   }
 
-  static async payment(req, res) {
+  static async paymentQuick(req, res) {
     try {
       const r = req.body
       const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
@@ -232,7 +232,132 @@ export default class mainController {
 
         var response = new APIContracts.ARBCreateSubscriptionResponse(apiResponse);
 
-        console.log(JSON.stringify(response, null, 2));
+        // console.log(JSON.stringify(response, null, 2));
+
+        if (response != null) {
+          if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+            // console.log('Subscription Id : ' + response.getSubscriptionId());
+            // console.log('Message Code : ' + response.getMessages().getMessage()[0].getCode());
+            // console.log('Message Text : ' + response.getMessages().getMessage()[0].getText());
+            const trxID = response.getSubscriptionId()
+            const resClient = await mainController.saveClient(req.body.billing)
+            const resCard = await mainController.saveCard(req.body.card, resClient.id)
+            const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id)
+
+            return res.status(200).json({
+              message: response.getMessages().getMessage()[0].getText(),
+              client: resClient,
+              card: resCard,
+              payment: resPayment
+            })
+
+          }
+          else {
+            // console.log('Result Code: ' + response.getMessages().getResultCode());
+            // console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
+            // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+            let errCode = response.getMessages().getMessage()[0].getCode();
+            let errMsg = response.getMessages().getMessage()[0].getText()
+            return res.status(500).json({ mainError: errMsg , errorCode: errCode})
+
+          }
+        }
+        else {
+          console.log('Null Response.');
+          return res.status(500).json({ mainError: "Algo salio mal, contacte soporte técnico a la brevedad." })
+        }
+
+
+
+        // callback(response);
+      });
+
+    } catch (error) {
+      logger.error(error)
+      return res.statuss(500).json({ message: "Algo Salio mal" })
+    }
+
+
+  }
+
+  static async payment(req, res) {
+
+    const currentDate = new Date()
+    const newDate = new Date()
+    newDate.setDate(currentDate.getDate())
+    // newDate.setDate(currentDate.getDate())
+    const dateToBill = newDate.toISOString().substring(0, 10)
+
+    try {
+      const r = req.body
+      const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType()
+      merchantAuthenticationType.setName(process.env.LOGIN_ID)
+      merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY)
+
+      const interval = new APIContracts.PaymentScheduleType.Interval()
+      interval.setLength(1)
+      interval.setUnit(APIContracts.ARBSubscriptionUnitEnum.MONTHS)
+
+      const paymentScheduleType = new APIContracts.PaymentScheduleType()
+      paymentScheduleType.setInterval(interval)
+      paymentScheduleType.setStartDate(dateToBill)
+      paymentScheduleType.setTotalOccurrences(12)
+      // paymentScheduleType.setTrialOccurrences(0)
+      // paymentScheduleType.setTotalOccurrences
+
+      const creditCard = new APIContracts.CreditCardType()
+      creditCard.setExpirationDate(r.card.expiration)
+      creditCard.setCardNumber(r.card.number)
+
+      const payment = new APIContracts.PaymentType()
+      payment.setCreditCard(creditCard)
+
+      var billTo = new APIContracts.NameAndAddressType();
+      billTo.setFirstName(r.billing.first_name);
+      billTo.setLastName(r.billing.last_name);
+      billTo.setCompany(r.billing.company);
+      billTo.setAddress(r.billing.address);
+      billTo.setCity(r.billing.city);
+      billTo.setState(r.billing.state);
+      billTo.setZip(r.billing.zip_code);
+      billTo.setCountry(r.billing.country)
+
+
+      // const shipTo = new APIContracts.NameAndAddressType();
+      // shipTo.setFirstName(r.shipping.first_name);
+      // shipTo.setLastName(r.shipping.last_name);
+      // shipTo.setCompany(r.shipping.company);
+      // shipTo.setAddress(r.shipping.address);
+      // shipTo.setCity(r.shipping.city);
+      // shipTo.setState(r.shipping.state);
+      // shipTo.setZip(r.shipping.zip_code);
+      // shipTo.setCountry(r.shipping.country);
+
+      const arbSubscription = new APIContracts.ARBSubscriptionType();
+      arbSubscription.setName(`${r.billing.first_name}, ${r.billing.last_name} - Creditmon `);
+      arbSubscription.setPaymentSchedule(paymentScheduleType);
+      arbSubscription.setAmount(r.invoice.amount);
+      // arbSubscription.setTrialAmount(utils.getRandomAmount());
+      arbSubscription.setPayment(payment);
+      // arbSubscription.setOrder(orderType);
+      // arbSubscription.setCustomer(customer);
+      arbSubscription.setBillTo(billTo);
+      arbSubscription.setShipTo(billTo);
+
+      const createRequest = new APIContracts.ARBCreateSubscriptionRequest();
+      createRequest.setMerchantAuthentication(merchantAuthenticationType);
+      createRequest.setSubscription(arbSubscription);
+
+      var ctrl = new APIControllers.ARBCreateSubscriptionController(createRequest.getJSON());
+      ctrl.setEnvironment(SDKConstants.endpoint.production);
+
+      ctrl.execute(async function () {
+
+        var apiResponse = ctrl.getResponse();
+
+        var response = new APIContracts.ARBCreateSubscriptionResponse(apiResponse);
+
+        // console.log(JSON.stringify(response, null, 2));
 
         if (response != null) {
           if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
@@ -409,7 +534,7 @@ export default class mainController {
 
     return res.json(paymentsFormatted)
    } catch (error) {
-    console.log(error);
+    // console.log(error);
     logger.error(error)
     return res.status(500).json({mainError: error})
    }
