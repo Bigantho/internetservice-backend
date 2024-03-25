@@ -528,7 +528,8 @@ export default class mainController {
         trx_id: x.transaction_id,
         client_name: [x.billing_first_name,x.billing_last_name].join(' '),
         amount: x.amount,
-        date_created: x.createdAt
+        date_created: x.createdAt,
+        phone_number: x.billing_phone
       })
     })
 
