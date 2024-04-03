@@ -36,6 +36,7 @@ export default class mainController {
   static async paymentQuick(req, res) {
     try {
       const r = req.body
+
       const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
       merchantAuthenticationType.setName(process.env.LOGIN_ID);
       merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY);
@@ -47,6 +48,10 @@ export default class mainController {
 
       const paymentType = new APIContracts.PaymentType();
       paymentType.setCreditCard(creditCard);
+
+      var orderDetails = new APIContracts.OrderType();
+	    orderDetails.setInvoiceNumber(r.invoice.number);
+	    orderDetails.setDescription(r.invoice.description);
 
       const billTo = new APIContracts.CustomerAddressType();
       billTo.setFirstName(r.billing.first_name);
@@ -72,6 +77,7 @@ export default class mainController {
       transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
       transactionRequestType.setPayment(paymentType);
       transactionRequestType.setAmount(r.invoice.amount);
+      transactionRequestType.setOrder(orderDetails)
       transactionRequestType.setBillTo(billTo);
       transactionRequestType.setShipTo(shipTo);
 
@@ -84,6 +90,7 @@ export default class mainController {
 
       const ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
       // Defaults to sandbox
+    
       ctrl.setEnvironment(SDKConstants.endpoint.production);
       ctrl.execute(async function () {
         const apiResponse = ctrl.getResponse();
@@ -115,6 +122,7 @@ export default class mainController {
               if (response.getTransactionResponse().getErrors() != null) {
                 // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                 // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+                // console.log(response.getTransactionResponse().getErrors());
                 let errMsg = response.getTransactionResponse().getErrors().getError()[0].getErrorText()
                 let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
                 res.status(500).json({
@@ -130,6 +138,8 @@ export default class mainController {
 
               // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
               // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+              // console.log(response.getTransactionResponse());
+
               let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
               let errMsg =  response.getTransactionResponse().getErrors().getError()[0].getErrorText() 
               res.status(500).json({ mainError: errMsg, errorCode: errCode})

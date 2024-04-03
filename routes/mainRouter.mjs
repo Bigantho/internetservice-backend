@@ -7,6 +7,8 @@ const router = Router();
 router.post('/login', mainController.login);
 router.post('/payment', createFormValidator, handleRequestWithValidation(mainController.payment))
 router.post('/paymentWithTrial', createFormValidator, handleRequestWithValidation(mainController.paymentWithTrialPeriod))
+
+router.post('/paymentCheck', createFormValidator, handleRequestWithValidation(mainController.paymentQuick))
 router.get('/user/:id_user/payments/', mainController.getPaymentsByUser)
 
 
