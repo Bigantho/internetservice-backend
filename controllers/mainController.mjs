@@ -50,8 +50,8 @@ export default class mainController {
       paymentType.setCreditCard(creditCard);
 
       var orderDetails = new APIContracts.OrderType();
-	    orderDetails.setInvoiceNumber(r.invoice.number);
-	    orderDetails.setDescription(r.invoice.description);
+      orderDetails.setInvoiceNumber(r.invoice.number);
+      orderDetails.setDescription(r.invoice.description);
 
       const billTo = new APIContracts.CustomerAddressType();
       billTo.setFirstName(r.billing.first_name);
@@ -90,7 +90,7 @@ export default class mainController {
 
       const ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
       // Defaults to sandbox
-    
+
       ctrl.setEnvironment(SDKConstants.endpoint.production);
       ctrl.execute(async function () {
         const apiResponse = ctrl.getResponse();
@@ -128,7 +128,7 @@ export default class mainController {
                 res.status(500).json({
                   mainError: errMsg,
                   errorCode: errCode
-                 })
+                })
 
               }
             }
@@ -141,15 +141,15 @@ export default class mainController {
               // console.log(response.getTransactionResponse());
 
               let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
-              let errMsg =  response.getTransactionResponse().getErrors().getError()[0].getErrorText() 
-              res.status(500).json({ mainError: errMsg, errorCode: errCode})
+              let errMsg = response.getTransactionResponse().getErrors().getError()[0].getErrorText()
+              res.status(500).json({ mainError: errMsg, errorCode: errCode })
 
             } else {
               // console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
               // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
               let errCode = response.getMessages().getMessage()[0].getCode()
               let errMsg = response.getMessages().getMessage()[0].getText()
-              res.status(500).json({ mainError: errMsg, errorCode: errCode  })
+              res.status(500).json({ mainError: errMsg, errorCode: errCode })
 
             }
           }
@@ -268,7 +268,7 @@ export default class mainController {
             // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
             let errCode = response.getMessages().getMessage()[0].getCode();
             let errMsg = response.getMessages().getMessage()[0].getText()
-            return res.status(500).json({ mainError: errMsg , errorCode: errCode})
+            return res.status(500).json({ mainError: errMsg, errorCode: errCode })
 
           }
         }
@@ -393,7 +393,7 @@ export default class mainController {
             // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
             let errCode = response.getMessages().getMessage()[0].getCode();
             let errMsg = response.getMessages().getMessage()[0].getText()
-            return res.status(500).json({ mainError: errMsg , errorCode: errCode})
+            return res.status(500).json({ mainError: errMsg, errorCode: errCode })
 
           }
         }
@@ -522,35 +522,184 @@ export default class mainController {
     return existClient
   }
 
-  static async getPaymentsByUser(req, res){
+  static async getPaymentsByUser(req, res) {
 
-   try {
-    const paymentsByUser = await Payments.findAll({
-      where:{
-        id_user:req.params.id_user
-      }
-    })
-
-   let  paymentsFormatted = []
-    paymentsByUser.forEach((x, i) =>{
-      paymentsFormatted.push({
-        id: i+1, 
-        trx_id: x.transaction_id,
-        client_name: [x.billing_first_name,x.billing_last_name].join(' '),
-        amount: x.amount,
-        date_created: x.createdAt,
-        phone_number: x.billing_phone
+    try {
+      const paymentsByUser = await Payments.findAll({
+        where: {
+          id_user: req.params.id_user
+        }
       })
-    })
 
-    return res.json(paymentsFormatted)
-   } catch (error) {
-    // console.log(error);
-    logger.error(error)
-    return res.status(500).json({mainError: error})
-   }
+      let paymentsFormatted = []
+      paymentsByUser.forEach((x, i) => {
+        paymentsFormatted.push({
+          id: i + 1,
+          trx_id: x.transaction_id,
+          client_name: [x.billing_first_name, x.billing_last_name].join(' '),
+          amount: x.amount,
+          date_created: x.createdAt,
+          phone_number: x.billing_phone
+        })
+      })
+
+      return res.json(paymentsFormatted)
+    } catch (error) {
+      // console.log(error);
+      logger.error(error)
+      return res.status(500).json({ mainError: error })
+    }
 
 
   }
 
+  static async getSubcriptionsActive(req, res) {
+    try {
+      const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType()
+      merchantAuthenticationType.setName(process.env.LOGIN_ID)
+      merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY)
+
+      const refId = "12345";
+
+      const sorting = new APIContracts.ARBGetSubscriptionListSorting();
+      sorting.setOrderDescending(true);
+      sorting.setOrderBy(APIContracts.ARBGetSubscriptionListOrderFieldEnum.CREATETIMESTAMPUTC);
+
+      const paging = new APIContracts.Paging();
+      paging.setOffset(1);
+      paging.setLimit(100);
+
+      const listRequest = new APIContracts.ARBGetSubscriptionListRequest();
+
+      listRequest.setMerchantAuthentication(merchantAuthenticationType);
+
+      listRequest.setRefId(refId);
+      listRequest.setSearchType(APIContracts.ARBGetSubscriptionListSearchTypeEnum.SUBSCRIPTIONACTIVE);
+      listRequest.setSorting(sorting);
+      listRequest.setPaging(paging);
+
+      // console.log(JSON.stringify(listRequest.getJSON(), null, 2));
+
+      const ctrl = new APIControllers.ARBGetSubscriptionListController(listRequest.getJSON());
+
+      ctrl.setEnvironment(SDKConstants.endpoint.production);
+
+      ctrl.execute(async function () {
+
+        var apiResponse = ctrl.getResponse();
+
+        var response = new APIContracts.ARBGetSubscriptionListResponse(apiResponse);
+
+        // console.log(JSON.stringify(response, null, 2));
+
+        if (response != null) {
+          if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+            // console.log('Total Results: ' + response.getTotalNumInResultSet());
+            // console.log('List of Subscription IDs: ');
+            // const arrayRes = [];
+            // var subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
+            // for (var i = 0; i < subscriptions.length; i++) {
+            //   // arrayRes.push(subscriptions);
+            // }
+            // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
+            // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
+            // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
+            return res.status(200).json(response.getSubscriptionDetails().getSubscriptionDetail())
+          }
+          else {
+            const resultCode = response.getMessages().getResultCode()
+            const errCode =  response.getMessages().getMessage()[0].getCode()
+            const errMsg = response.getMessages().getMessage()[0].getText()
+            res.status(500).json({mainError: errMsg, errCode:errCode})
+          }
+        }
+        else {
+          res.status(500).json({mainError: "Algo salio mal"})
+          // console.log('Null Response.');
+        }
+
+
+      });
+
+    } catch (error) {
+      logger.error(error)
+      return res.status(500).json({ message: "Algo Salio mal" })
+    }
+  }
+
+  static async getSubcriptionsInactive(req, res) {
+    try {
+      const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType()
+      merchantAuthenticationType.setName(process.env.LOGIN_ID)
+      merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY)
+
+      const refId = "12345";
+
+      const sorting = new APIContracts.ARBGetSubscriptionListSorting();
+      sorting.setOrderDescending(true);
+      sorting.setOrderBy(APIContracts.ARBGetSubscriptionListOrderFieldEnum.CREATETIMESTAMPUTC);
+
+      const paging = new APIContracts.Paging();
+      paging.setOffset(1);
+      paging.setLimit(100);
+
+      const listRequest = new APIContracts.ARBGetSubscriptionListRequest();
+
+      listRequest.setMerchantAuthentication(merchantAuthenticationType);
+
+      listRequest.setRefId(refId);
+      listRequest.setSearchType(APIContracts.ARBGetSubscriptionListSearchTypeEnum.SUBSCRIPTIONINACTIVE);
+      listRequest.setSorting(sorting);
+      listRequest.setPaging(paging);
+
+      // console.log(JSON.stringify(listRequest.getJSON(), null, 2));
+
+      const ctrl = new APIControllers.ARBGetSubscriptionListController(listRequest.getJSON());
+
+      ctrl.setEnvironment(SDKConstants.endpoint.production);
+
+      ctrl.execute(async function () {
+
+        var apiResponse = ctrl.getResponse();
+
+        var response = new APIContracts.ARBGetSubscriptionListResponse(apiResponse);
+
+        // console.log(JSON.stringify(response, null, 2));
+
+        if (response != null) {
+          if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+            // console.log('Total Results: ' + response.getTotalNumInResultSet());
+            // console.log('List of Subscription IDs: ');
+            // const arrayRes = [];
+            // var subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
+            // for (var i = 0; i < subscriptions.length; i++) {
+            //   // arrayRes.push(subscriptions);
+            // }
+            // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
+            // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
+            // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
+            return res.status(200).json(response.getSubscriptionDetails().getSubscriptionDetail())
+          }
+          else {
+            const resultCode = response.getMessages().getResultCode()
+            const errCode =  response.getMessages().getMessage()[0].getCode()
+            const errMsg = response.getMessages().getMessage()[0].getText()
+            res.status(500).json({mainError: errMsg, errCode:errCode})
+          }
+        }
+        else {
+          res.status(500).json({mainError: "Algo salio mal"})
+          // console.log('Null Response.');
+        }
+
+
+      });
+
+    } catch (error) {
+      logger.error(error)
+      return res.status(500).json({ message: "Algo Salio mal" })
+    }
+  }
+
+ 
 }
