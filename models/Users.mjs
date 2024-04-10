@@ -2,6 +2,7 @@
 
 import { Model, DataTypes } from "sequelize";
 import db from '../config/db.mjs';
+import Payments from "./Payments.mjs";
 
 // module.exports = (sequelize, DataTypes) => {
 class Users extends Model {
@@ -10,8 +11,8 @@ class Users extends Model {
    * This method is not a part of Sequelize lifecycle.
    * The `models/index` file will call this method automatically.
    */
-  static associate(models) {
-    // define association here
+  static associate() {
+    Users.hasMany(Payments, {foreignKey: 'id_user'})
   }
 }
 Users.init({

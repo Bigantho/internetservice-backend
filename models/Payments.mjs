@@ -3,7 +3,7 @@
 import { Model, DataTypes } from "sequelize";
 import db from '../config/db.mjs';
 import { check, param } from "express-validator";
-
+import Users from "./Users.mjs";
 // module.exports = (sequelize, DataTypes) => {
 class Payments extends Model {
   /**
@@ -13,6 +13,7 @@ class Payments extends Model {
    */
   static associate(models) {
     // define association here
+    Payments.belongsTo(Users, {foreignKey: 'id_user'})
   }
 }
 Payments.init({

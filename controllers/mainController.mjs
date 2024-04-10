@@ -1,7 +1,8 @@
 import Users from '../models/Users.mjs'
 import CreditCards from '../models/CreditCards.mjs';
-import Payments from '../models/Payments.mjs';
-import Clients from '../models/Clients.mjs'
+// import Payments from '../models/Payments.mjs';
+// import Clients from '../models/Clients.mjs'
+import {Payments, Clients} from '../models/index.mjs';
 // import { chargeCreditCard } from '../utils/chargedCreditCard.cjs'
 // const AuthorizeNet = require('authorize-net');
 import card from '../utils/chargedCreditCard.mjs'
@@ -526,9 +527,17 @@ export default class mainController {
 
     try {
       const paymentsByUser = await Payments.findAll({
+        logging: console.log,
         where: {
           id_user: req.params.id_user
         }
+      })
+
+      const paymentsByUser2 = await Users.findAll({
+        logging: console.log,
+        // where: {
+        //   id_user: req.params.id_user
+        // }
       })
 
       let paymentsFormatted = []
@@ -701,5 +710,32 @@ export default class mainController {
     }
   }
 
+  static async getTotalPayments(req, res){
+    try {
+      const totalPayments = await Payments.findAll({
+        include:{
+          model: Users
+        }
+      })
+
+      let paymentsFormatted = []
+      totalPayments.forEach((x, i) => {
+        paymentsFormatted.push({
+          id: i + 1,
+          trx_id: x.transaction_id,
+          client_name: [x.billing_first_name, x.billing_last_name].join(' '),
+          amount: x.amount,
+          date_created: x.createdAt,
+          phone_number: x.billing_phone,
+          email_user_charged: x.User.email,
+          user_name_charged: x.User.user
+        })
+      })
+      return res.json(paymentsFormatted)
+    } catch (error) {
+      logger.error(error)
+      return res.status(500).json({ mainError: error })
+    }
+  }
  
 }
