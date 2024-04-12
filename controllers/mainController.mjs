@@ -606,15 +606,21 @@ export default class mainController {
           if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
             // console.log('Total Results: ' + response.getTotalNumInResultSet());
             // console.log('List of Subscription IDs: ');
-            // const arrayRes = [];
-            // var subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
-            // for (var i = 0; i < subscriptions.length; i++) {
-            //   // arrayRes.push(subscriptions);
-            // }
+            const subscriptionsFormatted = [];
+            let subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
+            for (var i = 0; i < subscriptions.length; i++) {
+              subscriptionsFormatted.push({
+                client: [subscriptions[i].firstName, subscriptions[i].lastName ].join(' '), 
+                amount: subscriptions[i].amount,
+                trx_id: subscriptions[i].id,
+                status_subscription: subscriptions[i].status,
+                time_created: subscriptions[i].createTimeStampUTC
+              });
+            }
             // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
             // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
             // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
-            return res.status(200).json(response.getSubscriptionDetails().getSubscriptionDetail())
+            return res.status(200).json(subscriptionsFormatted)
           }
           else {
             const resultCode = response.getMessages().getResultCode()
@@ -680,15 +686,21 @@ export default class mainController {
           if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
             // console.log('Total Results: ' + response.getTotalNumInResultSet());
             // console.log('List of Subscription IDs: ');
-            // const arrayRes = [];
-            // var subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
-            // for (var i = 0; i < subscriptions.length; i++) {
-            //   // arrayRes.push(subscriptions);
-            // }
+            const subscriptionsFormatted = [];
+            let subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
+            for (var i = 0; i < subscriptions.length; i++) {
+              subscriptionsFormatted.push({
+                client: [subscriptions[i].firstName, subscriptions[i].lastName ].join(' '), 
+                amount: subscriptions[i].amount,
+                trx_id: subscriptions[i].id,
+                status_subscription: subscriptions[i].status,
+                time_created: subscriptions[i].createTimeStampUTC
+              });
+            }
             // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
             // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
             // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
-            return res.status(200).json(response.getSubscriptionDetails().getSubscriptionDetail())
+            return res.status(200).json(subscriptionsFormatted)
           }
           else {
             const resultCode = response.getMessages().getResultCode()
