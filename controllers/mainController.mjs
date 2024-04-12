@@ -111,7 +111,7 @@ export default class mainController {
               const trxID = response.getTransactionResponse().getTransId()
               const resClient = await mainController.saveClient(req.body.billing)
               const resCard = await mainController.saveCard(req.body.card, resClient.id)
-              const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id)
+              const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id, "Payment")
               res.status(200).json({
                 message: response.getTransactionResponse().getMessages().getMessage()[0].getDescription(),
                 client: resClient,
@@ -253,7 +253,7 @@ export default class mainController {
             const trxID = response.getSubscriptionId()
             const resClient = await mainController.saveClient(req.body.billing)
             const resCard = await mainController.saveCard(req.body.card, resClient.id)
-            const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id)
+            const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id, 'Subscription')
 
             return res.status(200).json({
               message: response.getMessages().getMessage()[0].getText(),
@@ -378,7 +378,7 @@ export default class mainController {
             const trxID = response.getSubscriptionId()
             const resClient = await mainController.saveClient(req.body.billing)
             const resCard = await mainController.saveCard(req.body.card, resClient.id)
-            const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id)
+            const resPayment = await mainController.savePayment(req.body, resCard.id, trxID, req.body.user_id, 'Subscription')
 
             return res.status(200).json({
               message: response.getMessages().getMessage()[0].getText(),
@@ -438,7 +438,7 @@ export default class mainController {
     }
   }
 
-  static async savePayment(paymentObject, cardID, trxID, userID) {
+  static async savePayment(paymentObject, cardID, trxID, userID, paymentType) {
     try {
       const paymentSaved = await Payments.create({
 
@@ -470,6 +470,7 @@ export default class mainController {
         shipping_state_providence: paymentObject.shipping.state,
         shipping_zip_code: paymentObject.shipping.zip_code,
         shipping_country: paymentObject.shipping.country,
+        type: paymentType
       })
       return paymentSaved
     } catch (error) {
@@ -728,7 +729,8 @@ export default class mainController {
           date_created: x.createdAt,
           phone_number: x.billing_phone,
           email_user_charged: x.User.email,
-          user_name_charged: x.User.user
+          user_name_charged: x.User.user,
+          type_payment: x.type
         })
       })
       return res.json(paymentsFormatted)

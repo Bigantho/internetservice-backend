@@ -52,6 +52,7 @@ Payments.init({
   shipping_state_providence :DataTypes.STRING,
   shipping_zip_code :DataTypes.INTEGER,
   shipping_country :DataTypes.STRING,
+  type: DataTypes.STRING,
 
 }, {
   sequelize: db.connection(),
