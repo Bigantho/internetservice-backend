@@ -2,7 +2,7 @@ import Users from '../models/Users.mjs'
 import CreditCards from '../models/CreditCards.mjs';
 // import Payments from '../models/Payments.mjs';
 // import Clients from '../models/Clients.mjs'
-import {Payments, Clients} from '../models/index.mjs';
+import { Payments, Clients } from '../models/index.mjs';
 // import { chargeCreditCard } from '../utils/chargedCreditCard.cjs'
 // const AuthorizeNet = require('authorize-net');
 import card from '../utils/chargedCreditCard.mjs'
@@ -41,6 +41,16 @@ export default class mainController {
       const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
       merchantAuthenticationType.setName(process.env.LOGIN_ID);
       merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY);
+
+      // **************** EL NUVO CODIGO
+      const customer = new APIContracts.CustomerType();
+      customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
+      // customer.setId(utils.getRandomString('Id'));
+      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setPhoneNumber(r.billing.phone_number);
+      // customer.setFaxNumber('1232122122');
+      // customer.setTaxId('911011011');
+      // / **************** EL NUVO CODIGO
 
       const creditCard = new APIContracts.CreditCardType();
       creditCard.setCardNumber(r.card.number);
@@ -81,6 +91,7 @@ export default class mainController {
       transactionRequestType.setOrder(orderDetails)
       transactionRequestType.setBillTo(billTo);
       transactionRequestType.setShipTo(shipTo);
+      transactionRequestType.setCustomer(customer)
 
       const createRequest = new APIContracts.CreateTransactionRequest();
       createRequest.setMerchantAuthentication(merchantAuthenticationType);
@@ -184,6 +195,18 @@ export default class mainController {
       interval.setLength(1)
       interval.setUnit(APIContracts.ARBSubscriptionUnitEnum.MONTHS)
 
+
+      // **************** EL NUVO CODIGO
+      const customer = new APIContracts.CustomerType();
+      customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
+      // customer.setId(utils.getRandomString('Id'));
+      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setPhoneNumber(r.billing.phone_number);
+      // customer.setFaxNumber('1232122122');
+      // customer.setTaxId('911011011');
+      // / **************** EL NUVO CODIGO
+
+
       const paymentScheduleType = new APIContracts.PaymentScheduleType()
       paymentScheduleType.setInterval(interval)
       paymentScheduleType.setStartDate(dateToBill)
@@ -226,7 +249,7 @@ export default class mainController {
       // arbSubscription.setTrialAmount(utils.getRandomAmount());
       arbSubscription.setPayment(payment);
       // arbSubscription.setOrder(orderType);
-      // arbSubscription.setCustomer(customer);
+      arbSubscription.setCustomer(customer);
       arbSubscription.setBillTo(billTo);
       arbSubscription.setShipTo(billTo);
 
@@ -309,6 +332,17 @@ export default class mainController {
       interval.setLength(1)
       interval.setUnit(APIContracts.ARBSubscriptionUnitEnum.MONTHS)
 
+
+      // **************** EL NUVO CODIGO
+      const customer = new APIContracts.CustomerType();
+      customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
+      // customer.setId(utils.getRandomString('Id'));
+      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setPhoneNumber(r.billing.phone_number);
+      // customer.setFaxNumber('1232122122');
+      // customer.setTaxId('911011011');
+      // / **************** EL NUVO CODIGO
+
       const paymentScheduleType = new APIContracts.PaymentScheduleType()
       paymentScheduleType.setInterval(interval)
       paymentScheduleType.setStartDate(dateToBill)
@@ -331,8 +365,7 @@ export default class mainController {
       billTo.setCity(r.billing.city);
       billTo.setState(r.billing.state);
       billTo.setZip(r.billing.zip_code);
-      billTo.setCountry(r.billing.country)
-
+      billTo.setCountry(r.billing.country);
 
       // const shipTo = new APIContracts.NameAndAddressType();
       // shipTo.setFirstName(r.shipping.first_name);
@@ -351,7 +384,13 @@ export default class mainController {
       // arbSubscription.setTrialAmount(utils.getRandomAmount());
       arbSubscription.setPayment(payment);
       // arbSubscription.setOrder(orderType);
-      // arbSubscription.setCustomer(customer);
+
+      // **************** EL NUVO CODIGO
+
+      arbSubscription.setCustomer(customer);
+
+      // **************** EL NUVO CODIGO
+
       arbSubscription.setBillTo(billTo);
       arbSubscription.setShipTo(billTo);
 
@@ -410,7 +449,7 @@ export default class mainController {
 
     } catch (error) {
       logger.error(error)
-      return res.statuss(500).json({ message: "Algo Salio mal" })
+      return res.status(500).json({ message: "Algo Salio mal" })
     }
 
 
@@ -610,7 +649,7 @@ export default class mainController {
             let subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
             for (var i = 0; i < subscriptions.length; i++) {
               subscriptionsFormatted.push({
-                client: [subscriptions[i].firstName, subscriptions[i].lastName ].join(' '), 
+                client: [subscriptions[i].firstName, subscriptions[i].lastName].join(' '),
                 amount: subscriptions[i].amount,
                 trx_id: subscriptions[i].id,
                 status_subscription: subscriptions[i].status,
@@ -624,13 +663,13 @@ export default class mainController {
           }
           else {
             const resultCode = response.getMessages().getResultCode()
-            const errCode =  response.getMessages().getMessage()[0].getCode()
+            const errCode = response.getMessages().getMessage()[0].getCode()
             const errMsg = response.getMessages().getMessage()[0].getText()
-            res.status(500).json({mainError: errMsg, errCode:errCode})
+            res.status(500).json({ mainError: errMsg, errCode: errCode })
           }
         }
         else {
-          res.status(500).json({mainError: "Algo salio mal"})
+          res.status(500).json({ mainError: "Algo salio mal" })
           // console.log('Null Response.');
         }
 
@@ -690,7 +729,7 @@ export default class mainController {
             let subscriptions = response.getSubscriptionDetails().getSubscriptionDetail();
             for (var i = 0; i < subscriptions.length; i++) {
               subscriptionsFormatted.push({
-                client: [subscriptions[i].firstName, subscriptions[i].lastName ].join(' '), 
+                client: [subscriptions[i].firstName, subscriptions[i].lastName].join(' '),
                 amount: subscriptions[i].amount,
                 trx_id: subscriptions[i].id,
                 status_subscription: subscriptions[i].status,
@@ -704,13 +743,13 @@ export default class mainController {
           }
           else {
             const resultCode = response.getMessages().getResultCode()
-            const errCode =  response.getMessages().getMessage()[0].getCode()
+            const errCode = response.getMessages().getMessage()[0].getCode()
             const errMsg = response.getMessages().getMessage()[0].getText()
-            res.status(500).json({mainError: errMsg, errCode:errCode})
+            res.status(500).json({ mainError: errMsg, errCode: errCode })
           }
         }
         else {
-          res.status(500).json({mainError: "Algo salio mal"})
+          res.status(500).json({ mainError: "Algo salio mal" })
           // console.log('Null Response.');
         }
 
@@ -723,10 +762,10 @@ export default class mainController {
     }
   }
 
-  static async getTotalPayments(req, res){
+  static async getTotalPayments(req, res) {
     try {
       const totalPayments = await Payments.findAll({
-        include:{
+        include: {
           model: Users
         }
       })
@@ -751,5 +790,5 @@ export default class mainController {
       return res.status(500).json({ mainError: error })
     }
   }
- 
+
 }
