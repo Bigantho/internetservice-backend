@@ -46,7 +46,7 @@ export default class mainController {
       const customer = new APIContracts.CustomerType();
       customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
       // customer.setId(utils.getRandomString('Id'));
-      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setEmail(r.billing.email);
       customer.setPhoneNumber(r.billing.phone_number);
       // customer.setFaxNumber('1232122122');
       // customer.setTaxId('911011011');
@@ -200,7 +200,7 @@ export default class mainController {
       const customer = new APIContracts.CustomerType();
       customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
       // customer.setId(utils.getRandomString('Id'));
-      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setEmail(r.billing.email);
       customer.setPhoneNumber(r.billing.phone_number);
       // customer.setFaxNumber('1232122122');
       // customer.setTaxId('911011011');
@@ -337,7 +337,7 @@ export default class mainController {
       const customer = new APIContracts.CustomerType();
       customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
       // customer.setId(utils.getRandomString('Id'));
-      // customer.setEmail(utils.getRandomInt()+'@test.anet.net');
+      customer.setEmail(r.billing.email);
       customer.setPhoneNumber(r.billing.phone_number);
       // customer.setFaxNumber('1232122122');
       // customer.setTaxId('911011011');
