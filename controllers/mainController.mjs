@@ -43,11 +43,11 @@ export default class mainController {
       merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY);
 
       // **************** EL NUVO CODIGO
-      const customer = new APIContracts.CustomerType();
-      customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
-      // customer.setId(utils.getRandomString('Id'));
-      customer.setEmail(r.billing.email);
-      customer.setPhoneNumber(r.billing.phone_number);
+      // const customer = new APIContracts.CustomerType();
+      // customer.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
+      // // customer.setId(utils.getRandomString('Id'));
+      // customer.setEmail(r.billing.email);
+      // customer.setPhoneNumber(r.billing.phone_number);
       // customer.setFaxNumber('1232122122');
       // customer.setTaxId('911011011');
       // / **************** EL NUVO CODIGO
@@ -91,7 +91,7 @@ export default class mainController {
       transactionRequestType.setOrder(orderDetails)
       transactionRequestType.setBillTo(billTo);
       transactionRequestType.setShipTo(shipTo);
-      transactionRequestType.setCustomer(customer)
+      // transactionRequestType.setCustomer(customer)
 
       const createRequest = new APIContracts.CreateTransactionRequest();
       createRequest.setMerchantAuthentication(merchantAuthenticationType);
@@ -172,6 +172,7 @@ export default class mainController {
       });
 
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ messageClient: "Contacte con el soporte técnico", mainError: error })
 
     }
