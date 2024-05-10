@@ -83,7 +83,8 @@ const requiredFields = [
   'shipping.city',
   'shipping.state',
   'shipping.zip_code',
-  'shipping.country']
+  'shipping.country',
+  'user_id']
 
 const fieldNumber = [
   'billing.zip_code',
