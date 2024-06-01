@@ -546,7 +546,7 @@ export default class mainController {
       where: {
         name: clientObject.first_name,
         last_name: clientObject.last_name,
-        // email: clientObject.email,
+        email: clientObject.email,
         phone_number: clientObject.phone_number
       }
     })

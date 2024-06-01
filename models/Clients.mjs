@@ -3,6 +3,7 @@
 import { Model, DataTypes } from "sequelize";
 import db from '../config/db.mjs';
 
+
 // module.exports = (sequelize, DataTypes) => {
 class Clients extends Model {
     /**
