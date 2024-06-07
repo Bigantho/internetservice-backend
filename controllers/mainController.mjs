@@ -696,7 +696,7 @@ export default class mainController {
 
       const paging = new APIContracts.Paging();
       paging.setOffset(1);
-      paging.setLimit(100);
+      paging.setLimit(1000);
 
       const listRequest = new APIContracts.ARBGetSubscriptionListRequest();
 
