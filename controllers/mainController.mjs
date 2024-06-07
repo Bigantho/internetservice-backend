@@ -659,7 +659,7 @@ export default class mainController {
             // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
             // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
             // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
-            return res.status(200).json(response)
+            return res.status(200).json(subscriptionsFormatted)
           }
           else {
             const resultCode = response.getMessages().getResultCode()
