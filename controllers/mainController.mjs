@@ -9,7 +9,7 @@ import card from '../utils/chargedCreditCard.mjs'
 import { Op } from 'sequelize'
 import pkg from 'authorizenet';
 import logger from '../utils/logger.mjs';
-const { APIContracts, APIControllers, Constants: SDKConstants } = pkg;
+const { APIContracts, APIControllers, Constants: SDKConstants} = pkg;
 export default class mainController {
 
   static async login(req, res) {
@@ -617,7 +617,7 @@ export default class mainController {
 
       const paging = new APIContracts.Paging();
       paging.setOffset(1);
-      paging.setLimit(100);
+      paging.setLimit(1000);
 
       const listRequest = new APIContracts.ARBGetSubscriptionListRequest();
 
@@ -633,7 +633,6 @@ export default class mainController {
       const ctrl = new APIControllers.ARBGetSubscriptionListController(listRequest.getJSON());
 
       ctrl.setEnvironment(SDKConstants.endpoint.production);
-
       ctrl.execute(async function () {
 
         var apiResponse = ctrl.getResponse();
@@ -660,7 +659,7 @@ export default class mainController {
             // console.log('Message Code: ' + response.getMessages().getMessage()[0].getCode());
             // console.log('Message Text: ' + response.getMessages().getMessage()[0].getText());
             // return res.status(200).json({a:response.getTotalNumInResultSet(), data: subscriptions})
-            return res.status(200).json(subscriptionsFormatted)
+            return res.status(200).json(response)
           }
           else {
             const resultCode = response.getMessages().getResultCode()
@@ -790,6 +789,62 @@ export default class mainController {
       logger.error(error)
       return res.status(500).json({ mainError: error })
     }
+  }
+
+  static async getSubcriptionDetail(req, res){
+
+    try {
+      const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType()
+      merchantAuthenticationType.setName(process.env.LOGIN_ID)
+      merchantAuthenticationType.setTransactionKey(process.env.TRANSACTION_KEY)
+
+      const subscriptionId = req.params.id_subscription;
+      const subscriptionRefId = "12345"
+      const request = new APIContracts.ARBGetSubscriptionRequest();
+      request.setMerchantAuthentication(merchantAuthenticationType);
+      request.setSubscriptionId(subscriptionId);
+      request.setRefId(subscriptionRefId)
+
+      const ctrl = new APIControllers.ARBGetSubscriptionController(request.getJSON());
+
+      ctrl.setEnvironment(SDKConstants.endpoint.production);
+
+      ctrl.execute(async function () {
+
+        var apiResponse = ctrl.getResponse();
+
+        var response = new APIContracts.ARBGetSubscriptionResponse(apiResponse);
+
+        // console.log(JSON.stringify(response, null, 2));
+
+        if (response != null) {
+          if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+            console.log('Subscription Name : ' + response.getSubscription().getName());
+            console.log('Message Code : ' + response.getMessages().getMessage()[0].getCode());
+            console.log('Message Text : ' + response.getMessages().getMessage()[0].getText());
+          
+           
+            return res.status(200).json(response.getSubscription()  )
+          }
+          else {
+            const resultCode = response.getMessages().getResultCode()
+            const errCode = response.getMessages().getMessage()[0].getCode()
+            const errMsg = response.getMessages().getMessage()[0].getText()
+            res.status(500).json({ mainError: errMsg, errCode: errCode })
+          }
+        }
+        else {
+          res.status(500).json({ mainError: "Algo salio mal" })
+        }
+      });
+
+    } catch (error) {
+      logger.error(error)
+      return res.status(500).json({ message: "Algo Salio mal" })
+    }
+
+
+
   }
 
 }
