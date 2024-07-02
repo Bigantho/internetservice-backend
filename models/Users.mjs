@@ -12,21 +12,19 @@ class Users extends Model {
    * The `models/index` file will call this method automatically.
    */
   static associate() {
-    Users.hasMany(Payments, {foreignKey: 'id_user'})
+    // Users.hasMany(Payments, {foreignKey: 'id_user'})
   }
 }
 Users.init({
   user: DataTypes.STRING,
   password: DataTypes.STRING,
-  email: DataTypes.STRING,
-  status: {
-    type: DataTypes.ENUM,
-    values: ['Active','Desactived'],
-  }
+  status: DataTypes.STRING,
 }, {
   sequelize: db.connection(),
   modelName: 'Users',
-  tableName: 'users'
+  tableName: 'users',
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 // return Agents;
 // };

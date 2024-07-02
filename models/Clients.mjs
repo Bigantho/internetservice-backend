@@ -23,7 +23,7 @@ Clients.init({
 }, {
     sequelize: db.connection(),
     modelName: 'Clients',
-    tableName: 'clients'
+    tableName: 'clients',
 });
 // return Agents;
 // };
