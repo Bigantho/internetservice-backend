@@ -18,6 +18,11 @@ class Clients extends Model {
 Clients.init({
     name: DataTypes.STRING,
     last_name: DataTypes.STRING,
+    address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    state: DataTypes.STRING,
+    country: DataTypes.STRING,
+    zipcode: DataTypes.INTEGER,
     email: DataTypes.STRING,
     phone_number: DataTypes.STRING
 }, {

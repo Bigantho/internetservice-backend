@@ -19,6 +19,7 @@ Users.init({
   user: DataTypes.STRING,
   password: DataTypes.STRING,
   status: DataTypes.STRING,
+  id_profile: DataTypes.STRING, 
 }, {
   sequelize: db.connection(),
   modelName: 'Users',

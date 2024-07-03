@@ -17,10 +17,13 @@ class Payments extends Model {
   }
 }
 Payments.init({
-  id_sale: DataTypes.INTEGER,
-  id_credit_card: DataTypes.INTEGER,
-  charged_by: DataTypes.INTEGER,
-  amount: DataTypes.FLOAT,
+  id_client: DataTypes.INTEGER,
+  id_plan: DataTypes.INTEGER,
+  date_sale: DataTypes.DATE,
+  date_start: DataTypes.DATE,
+  sold_by: DataTypes.INTEGER,
+  stripe_ref: DataTypes.STRING,
+  order_ref: DataTypes.STRING,
   status: DataTypes.STRING
 }, {
   sequelize: db.connection(),
