@@ -30,7 +30,6 @@ CreditCards.init({
   billing_country: DataTypes.STRING,
   billing_zipcode: DataTypes.STRING,
   status: DataTypes.BOOLEAN,
-  id_client: DataTypes.INTEGER
 }, {
   sequelize: db.connection(),
   modelName: 'CreditCards',

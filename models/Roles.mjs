@@ -16,13 +16,10 @@ class Users extends Model {
   }
 }
 Users.init({
-  id_user: DataTypes.INTEGER, 
-  name: DataTypes.STRING,
-  last_name: DataTypes.STRING,
-  email: DataTypes.STRING,
-  agent_type: DataTypes.STRING,
+  id: DataTypes.INTEGER, 
+  name: DataTypes.INTEGER,
   status: DataTypes.BOOLEAN,
-
+  type: DataTypes.STRING
 }, {
   sequelize: db.connection(),
   modelName: 'Users',

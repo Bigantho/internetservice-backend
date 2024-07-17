@@ -16,11 +16,8 @@ class Users extends Model {
   }
 }
 Users.init({
-  id_user: DataTypes.INTEGER, 
+  id: DataTypes.INTEGER, 
   name: DataTypes.STRING,
-  last_name: DataTypes.STRING,
-  email: DataTypes.STRING,
-  agent_type: DataTypes.STRING,
   status: DataTypes.BOOLEAN,
 
 }, {

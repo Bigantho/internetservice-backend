@@ -24,7 +24,8 @@ Clients.init({
     country: DataTypes.STRING,
     zipcode: DataTypes.INTEGER,
     email: DataTypes.STRING,
-    phone_number: DataTypes.STRING
+    phone_number: DataTypes.STRING, 
+    status: DataTypes.BOOLEAN
 }, {
     sequelize: db.connection(),
     modelName: 'Clients',

@@ -6,7 +6,7 @@ import handleRequestPhoneNumber from "../utils/phoneNumberHandler.mjs";
 const router = Router();
 
 router.post('/login', mainController.login);
-router.post('/payment/save', createFormValidator,  handleRequestWithValidation(mainController.savePayment));
+router.post('/payment/save',  handleRequestWithValidation(mainController.processPayment));
 
 
 router.get('/payment/total', handleRequestWithValidation(mainController.getTotalPayments))
