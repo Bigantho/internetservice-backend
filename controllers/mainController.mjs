@@ -233,7 +233,8 @@ export default class mainController {
               const trxId = response.getTransactionResponse().getTransId()
               const clientName = ([r.billing.first_name, r.billing.last_name]).join(' ')
               const clientPhoneNumber = r.billing.phone_number
-              const emailSend = await mainController.sendMail(trxId, clientName, clientPhoneNumber)
+              const amount = r.invoice.amount
+              const emailSend = await mainController.sendMail(trxId, clientName, clientPhoneNumber, amount)
               res.status(200).json({message: "Pago procesado", mailSend: emailSend})
 
             } else {
@@ -290,11 +291,11 @@ export default class mainController {
     }
   }
 
-  static async sendMail (trxId, clientName, clientPhoneNumber){
+  static async sendMail (trxId, clientName, clientPhoneNumber, amount){
     const to = "sales@fortified.one"
     const subject = "Confirmación de pago"
     const text = ""
-    const html =  `El codigo de transacción es: <strong> ${trxId} </strong> <br> Cliente: <strong> ${clientName}</strong> <br> Teléfono: <strong> ${clientPhoneNumber} </strong>`
+    const html =  `El codigo de transacción es: <strong> ${trxId} </strong> <br> Cliente: <strong> ${clientName}</strong> <br> Teléfono: <strong> ${clientPhoneNumber} </strong> <br> Monto: <strong>${amount}</strong>`
       try {
         const ret = await sendMailt(to, subject, text,html)
         return  'Correo enviado'
