@@ -8,7 +8,7 @@ const router = Router();
 router.post('/login', mainController.login);
 router.post('/payment/save',  handleRequestWithValidation(mainController.processPayment));
 
-
 router.get('/payment/total', handleRequestWithValidation(mainController.getTotalPayments))
+router.post('/mail/send', mainController.sendMail )
 
 export default router;

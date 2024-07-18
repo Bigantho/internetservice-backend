@@ -9,6 +9,7 @@ import card from '../utils/chargedCreditCard.mjs'
 import { Op } from 'sequelize'
 import pkg from 'authorizenet';
 import logger from '../utils/logger.mjs';
+import { sendMailt } from '../services/sendMail.mjs'
 const { APIContracts, APIControllers, Constants: SDKConstants } = pkg;
 export default class mainController {
 
@@ -237,6 +238,7 @@ export default class mainController {
                 // console.log(response.getTransactionResponse().getErrors());
                 let errMsg = response.getTransactionResponse().getErrors().getError()[0].getErrorText()
                 let errCode = response.getTransactionResponse().getErrors().getError()[0].getErrorCode()
+                logger.error(errMsg)
                 res.status(500).json({
                   mainError: errMsg,
                   errorCode: errCode
@@ -261,21 +263,38 @@ export default class mainController {
               // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
               let errCode = response.getMessages().getMessage()[0].getCode()
               let errMsg = response.getMessages().getMessage()[0].getText()
+              logger.error(errMsg)
+
               res.status(500).json({ mainError: errMsg, errorCode: errCode })
 
             }
           }
         } else {
           // console.log('Null Response.');
+          logger.error("contacte soporte tecnico")
           res.status(500).json({ mainError: "Contacte con el soporte técnico" })
         }
       });
 
     } catch (error) {
       console.log(error);
+      logger.error(error)
+
       return res.status(500).json({ messageClient: "Contacte con el soporte técnico", mainError: error })
 
     }
   }
 
+  static async sendMail (req, res){
+      try {
+        const ret = await sendMailt()
+        console.log(ret);
+        return res.status(200).json({message: 'Correo enviado'})
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: 'Fallo'})
+
+      }
+  }
 }
+

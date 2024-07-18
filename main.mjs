@@ -21,6 +21,14 @@ export default class Main {
   }
 
   routes() {
+    this.server.app.use('/test', (req, res) => {
+      const errorMsg = 'Resource route not found';
+
+      res.status(http2.constants.HTTP_STATUS_NOT_FOUND)
+        .json({'message': "test aneter"});
+
+      // console.log(`${errorMsg}: `, req.url);
+    });
 
     this.server.app.use('/api/v1', mainRouter);
     this.server.app.use('/', mainRouterView);
