@@ -8,50 +8,37 @@ dotenv.config();
 
 
 // Send mail with defined transport object
-export const sendMailt = async () => {
+export const sendMailt = async (to, subject, text, html) => {
 
     // Create a transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        host: "smtp.red5g.com.sv",
-        port: 587,
-        secure: false,
-        // service: 'smtp.red5g.com.sv',
+        host:"smtp.red5g.com.sv",
+        port: 465,
+        secure: true,
         auth: {
-            // user: process.env.EMAIL,
-            // pass: process.env.EMAIL_PASSWORD
-            user: "netops_xl14nd0w",
-            pass: "a[@!(,)?|3#!@7rJ7mc_fJpFg"
-        }
+            user: process.env.USER_SMTP,
+            pass: process.env.PASSWORD_SMTP
+        
+        },
+        
+        // logger: true, // Log to console
+        // debug: true // Include SMTP traffic in the logs
     });
 
     // Setup email data
     let mailOptions = {
-        from: `"Your Name" <${process.env.EMAIL}>`,
-        to: 'avasquez@red5g.com',
-        subject: 'Hello ✔',
-        text: 'Hello world?',
-        html: '<b>Hello world?</b>'
+        from: `"Billing Xfinity " <${process.env.EMAIL}>`,
+        // to: 'sales@fortified.one',
+        to,
+        // subject: 'Confirmación de pago',
+        subject,
+        // text: 'me vas autorizar parquear enfrente de la oficie?',
+        html
     };
 
     try {
-        // const mailOptions = {
-        //     from: `"Your Name" <${process.env.EMAIL}>`,
-        //     to,
-        //     subject,
-        //     text,
-        //     html
-        // };
-        console.log("inside here");
+        
         const info = await transporter.sendMail(mailOptions);
-
-        // console.log(info)
-        //    await transporter.sendMail(mailOptions, (error, info) => {
-        //         if (error) {
-        //             return console.error(error);
-        //         }
-        //         console.log('Message sent: %s', info.messageId);
-        //         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        //     });
 
     } catch (error) {
         console.log("error", error);

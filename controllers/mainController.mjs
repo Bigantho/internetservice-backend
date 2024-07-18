@@ -217,7 +217,8 @@ export default class mainController {
               // console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
               // console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
               // console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
-              console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
+              // console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
+
               // const trxID = response.getTransactionResponse().getTransId()
               // const resClient = await mainController.saveClient(req.body.billing)
               // const resCard = await mainController.saveCard(req.body.card, resClient.id)
@@ -229,7 +230,11 @@ export default class mainController {
               //   payment: resPayment
               // })
               // res.status(200).json(JSON.stringify(response, null, 2))
-              res.status(200).json("Pago procesado")
+              const trxId = response.getTransactionResponse().getTransId()
+              const clientName = ([r.billing.first_name, r.billing.last_name]).join(' ')
+              const clientPhoneNumber = r.billing.phone_number
+              const emailSend = await mainController.sendMail(trxId, clientName, clientPhoneNumber)
+              res.status(200).json({message: "Pago procesado", mailSend: emailSend})
 
             } else {
               if (response.getTransactionResponse().getErrors() != null) {
@@ -285,15 +290,18 @@ export default class mainController {
     }
   }
 
-  static async sendMail (req, res){
+  static async sendMail (trxId, clientName, clientPhoneNumber){
+    const to = "sales@fortified.one"
+    const subject = "Confirmación de pago"
+    const text = ""
+    const html =  `El codigo de transacción es: <strong> ${trxId} </strong> <br> Cliente: <strong> ${clientName}</strong> <br> Teléfono: <strong> ${clientPhoneNumber} </strong>`
       try {
-        const ret = await sendMailt()
-        console.log(ret);
-        return res.status(200).json({message: 'Correo enviado'})
+        const ret = await sendMailt(to, subject, text,html)
+        return  'Correo enviado'
       } catch (error) {
         console.log(error);
-        return res.status(500).json({message: 'Fallo'})
-
+        // return res.status(500).json({message: 'Fallo'})
+        return "Correo fallo"
       }
   }
 }
