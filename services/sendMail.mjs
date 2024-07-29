@@ -27,7 +27,7 @@ export const sendMailt = async (to, subject, text, html) => {
 
     // Setup email data
     let mailOptions = {
-        from: `"Billing Xfinity " <${process.env.EMAIL}>`,
+        from: `"Billing Internet Support " <${process.env.EMAIL}>`,
         // to: 'sales@fortified.one',
         to,
         // subject: 'Confirmación de pago',

@@ -232,10 +232,10 @@ export default class mainController {
               // res.status(200).json(JSON.stringify(response, null, 2))
               const trxId = response.getTransactionResponse().getTransId()
               const clientName = ([r.billing.first_name, r.billing.last_name]).join(' ')
-              const clientPhoneNumber = r.billing.phone_number
+              const clientEmail = r.billing.email
               const amount = r.invoice.amount
-              const emailSend = await mainController.sendMail(trxId, clientName, clientPhoneNumber, amount)
-              res.status(200).json({message: "Pago procesado", mailSend: emailSend})
+              const emailSend = await mainController.sendMail(trxId, clientName, clientEmail, amount)
+              res.status(200).json({ message: "Pago procesado", mailSend: emailSend })
 
             } else {
               if (response.getTransactionResponse().getErrors() != null) {
@@ -291,19 +291,23 @@ export default class mainController {
     }
   }
 
-  static async sendMail (trxId, clientName, clientPhoneNumber, amount){
-    const to = "sales@fortified.one"
-    const subject = "Confirmación de pago"
+  static async sendMail(trxId, clientName, clientEmail, amount) {
+    const to = `${clientEmail}, sales@fortified.one`
+    const subject = "Payment confirmation"
     const text = ""
-    const html =  `El codigo de transacción es: <strong> ${trxId} </strong> <br> Cliente: <strong> ${clientName}</strong> <br> Teléfono: <strong> ${clientPhoneNumber} </strong> <br> Monto: <strong>${amount}</strong>`
-      try {
-        const ret = await sendMailt(to, subject, text,html)
-        return  'Correo enviado'
-      } catch (error) {
-        console.log(error);
-        // return res.status(500).json({message: 'Fallo'})
-        return "Correo fallo"
-      }
+
+    const html = `
+    <!doctypehtml><html xmlns=http://www.w3.org/1999/xhtml><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><body bgcolor=#ffffff class=body style=margin:0!important;padding:0!important;word-wrap:normal;word-spacing:normal><div role=article><table style=border:0><tr style=border:0><td align=center style=font-size:0;padding:0;background-color:#fff;border:0 valign=top><table style=width:600px;border:0 cellpadding=0 cellspacing=0 role=presentation><tr style=border:0><td align=center style=border:0 valign=middle><img class=img-logo height=150 src=https://bussinternet.us/assets/internet_services_logo_new.png width=270></table><tr style=border:0><td align=center style=padding:0;border:0><p style=color:#777>Hello, <strong style=color:#000!important>${clientName}</strong>!<tr style=border:0><td align=center style="padding:0 35px 20px 15px;border:0"><table style=width:600px;border:0 cellpadding=0 cellspacing=0 role=presentation border=0 class=w100p><tr style=border:0><td align=center style=padding:20px;border:0><h2 style=font-size:25px;font-weight:400;line-height:36px;color:#000;margin:0>Thank you for your payment!<br>We are glad to notify you that we have successfully received your payment of <strong>$${amount}</strong> for:<tr style=border:0><td align=center style="padding:20px 0;border:0"><tr style=border:0><td align=center style=padding:20px;border:0><button class=button-40 role=button style="background-color:#111827;border:1px solid transparent;border-radius:.75rem;box-sizing:border-box;color:#fff;cursor:pointer;flex:0 0 auto;font-family:'Inter var',ui-sans-serif,system-ui,-apple-system,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';font-size:1.125rem;font-weight:600;line-height:1.5rem;padding:.75rem 1.2rem;text-align:center;text-decoration:none #6b7280 solid;text-decoration-thickness:auto;transition-duration:.2s;transition-property:background-color,border-color,color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);user-select:none;-webkit-user-select:none;touch-action:manipulation;width:auto">Support and Asistance Service</button><tr style=border:0><td align=center style=padding:20px;border:0 valign=top class=footer><p style=font-size:15px;line-height:24px;mso-line-height-rule:exactly>Thank you for choose Internet Support!<p style=font-size:10px;line-height:10px;mso-line-height-rule:exactly;margin-bottom:5px>By accepting this payment, you authorize the specified amount described to be charged to your credit card. This authorization confirms your agreement to the transaction and acceptance of the terms associated with this payment. Our company provides assistance and support services to ensure the proper hiring and installation of internet services; however, we are not responsible for the final service delivered by each contracted company.</table><tr style=border:0><td align=center style=background-color:#eee;border:0 valign=top class=footer><p style=padding:15px;font-size:10px;line-height:24px;mso-line-height-rule:exactly>©2024 Internet Support. All the rights reserved!</tr></table></div>
+    `
+   
+    try {
+      const ret = await sendMailt(to, subject, text, html)
+      return 'Correo enviado'
+    } catch (error) {
+      console.log(error);
+      // return res.status(500).json({message: 'Fallo'})
+      return "Correo fallo"
+    }
   }
 }
 
