@@ -8,7 +8,7 @@ dotenv.config();
 
 
 // Send mail with defined transport object
-export const sendMailt = async (to, subject, text, html) => {
+export const sendMailt = async (to,bcc, subject, text, html) => {
 
     // Create a transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
@@ -30,6 +30,7 @@ export const sendMailt = async (to, subject, text, html) => {
         from: `"Billing Internet Support " <${process.env.EMAIL}>`,
         // to: 'sales@fortified.one',
         to,
+        bcc,
         // subject: 'Confirmación de pago',
         subject,
         // text: 'me vas autorizar parquear enfrente de la oficie?',
