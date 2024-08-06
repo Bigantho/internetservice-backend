@@ -6,7 +6,8 @@ import handleRequestPhoneNumber from "../utils/phoneNumberHandler.mjs";
 const router = Router();
 
 router.post('/login', mainController.login);
-router.post('/payment/save',  handleRequestWithValidation(mainController.processPayment));
+router.post('/payment/save/xfinity',  handleRequestWithValidation(mainController.processPayment));
+router.post('/payment/save/wireless', handleRequestWithValidation(mainController.processPaymentWireless))
 
 router.get('/payment/total', handleRequestWithValidation(mainController.getTotalPayments))
 router.post('/mail/send', mainController.sendMail )
